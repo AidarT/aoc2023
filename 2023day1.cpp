@@ -32,7 +32,7 @@ string number_(const string &line, bool first, const map<string, string> &m_dict
 	return ans;
 }
 
-int main() {
+int main1() {
 	map<string, string> m_dict;
 	m_dict["one"] = "1";
 	m_dict["two"] = "2";

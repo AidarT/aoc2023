@@ -128,6 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2023day1.cpp" />
+    <ClCompile Include="2023day2.cpp" />
+    <ClCompile Include="2023day3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="input1.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,61 +7,74 @@
 
 using namespace std;
 
-
+void fillMap(string line, const regex &re, const int &x, const int line_size, map<vector<int>, string> &dict) {
+	cmatch res = cmatch{};
+	int shift = 0;
+	while (regex_search(line.c_str(), res, re)) {
+		int y = res.prefix().second - res.prefix().first + shift;
+		dict[{x, y}] = res[0];
+		line = res.suffix();
+		shift = line_size - line.size();
+	}
+}
 
 int main() {
 	int answer1 = 0;
 	int answer2 = 0;
-	cmatch res = cmatch{};
 	regex reNum(R"(\d+)");
 	regex reSymb(R"([^.|^\d])");
+	regex reGear(R"([*])");
 	map<vector<int>, string> symb;
 	map<vector<int>, string> numb;
 	map<vector<int>, string> gears;
 	ifstream ifile("input1.txt", ios::in);
 	if (ifile.is_open()) {
 		string line;
-		int x = 0; int y = 0;
+		int x = 0; int y = 0;		
 		while (getline(ifile, line)) {
-			string line2 = line;
-			int shift = 0;
-			while (regex_search(line2.c_str(), res, reSymb)) {
-				y = res.prefix().second - res.prefix().first + shift;
-				symb[{x,y}] = res[0];
-				line2 = res.suffix();
-				shift = line.size() - line2.size();
-			}
-			line2 = line;
-			shift = 0;
-			while (regex_search(line2.c_str(), res, reNum)) {
-				y = res.prefix().second - res.prefix().first + shift;
-				numb[{x, y}] = res[0];
-				line2 = res.suffix();
-				shift = line.size()-line2.size();
-			}
+			fillMap(line, reSymb, x, line.size(), symb);
+			fillMap(line, reNum, x, line.size(), numb);
+			fillMap(line, reGear, x, line.size(), gears);
 			x++;
 		}
 		//part1
-		for (const auto& el : numb) {
-			x = el.first[0];
-			y = el.first[1];
+		for (const auto& n : numb) {
+			x = n.first[0];
+			y = n.first[1];
 			int key = 0;
 			for (int x_temp = x - 1; (x_temp <= x + 1) && (key == 0); x_temp++) {
-				int bord_max = y + el.second.size();
+				int bord_max = y + n.second.size();
 				for (int y_temp = y - 1; y_temp <= bord_max; y_temp++) {
 					if (symb.count({ x_temp, y_temp })) {
-						answer1 += stoi(el.second);
+						answer1 += stoi(n.second);
 						key = 1;
 						break;
 					}
 				}
 			}
-			
 		}
 
 		//part2
+		for (const auto& gear : gears) {
+			x = gear.first[0];
+			y = gear.first[1];
+			vector <int> count;				
+			for (const auto& n : numb) {
+				int x_temp = n.first[0];
+				int y_temp = n.first[1];
+				if (abs(x_temp - x) <= 1) {
+					if ((y-y_temp <= n.second.size() && y_temp <= y) || (y_temp-y <= 1 && y_temp > y)) {
+						count.push_back(stoi(n.second));
+					}
+				}
+			}
+			if (count.size() == 2) {
+				answer2 += count[0] * count[1];
+			}
+		}
 		
-		cout << answer1 << endl;
+		std::cout << answer1 << endl;
+		std::cout << answer2 << endl;
 	}
 	return 0;
 }
